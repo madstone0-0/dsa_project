@@ -18,4 +18,9 @@ public abstract class TreeNode<T> {
         child.parent = this;
         children.add(child);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s{%s}", this.getClass().getSimpleName(), data.toString());
+    }
 }
