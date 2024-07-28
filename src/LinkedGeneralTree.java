@@ -3,7 +3,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
-  private TreeNode<T> root = null;
+  private GeneralTreeNode<T> root = null;
   private int size = 0;
 
   protected GeneralTreeNode<T> createNode(T val, TreeNode<T> parent) {
@@ -12,12 +12,12 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
 
   LinkedGeneralTree() {}
 
-  protected TreeNode<T> validate(TreeNode<T> n) {
+  protected GeneralTreeNode<T> validate(TreeNode<T> n) {
     if (!(n instanceof GeneralTreeNode))
       throw new IllegalArgumentException("Invalid node");
     if (n.parent == n)
       throw new IllegalArgumentException("Node is no longer in the tree");
-    return n;
+    return (GeneralTreeNode<T>)n;
   }
 
   @Override
@@ -36,7 +36,7 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
     return node.parent;
   }
 
-  public TreeNode<T> addRoot(T val) {
+  public GeneralTreeNode<T> addRoot(T val) {
     if (!isEmpty())
       throw new IllegalArgumentException("Tree is not empty");
     root = createNode(val, null);
@@ -45,7 +45,7 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
   }
 
   public TreeNode<T> addChild(TreeNode<T> n, T val) {
-    var parent = validate(n);
+    var parent = (GeneralTreeNode<T>)validate(n);
     var child = createNode(val, parent);
     parent.addChild(child);
     size++;
@@ -60,7 +60,7 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
   }
 
   public void remove(TreeNode<T> n) {
-    var node = validate(n);
+    var node = (GeneralTreeNode<T>)validate(n);
     var numberOfChildren = numChildren(n);
     var children = children(n);
     if (node == root) {
@@ -70,7 +70,7 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
         child.parent = child;
       }
       node.children.clear();
-      node.parent.children.remove(node);
+      ((GeneralTreeNode<T>)node.parent).children.remove(node);
       node.parent = node;
       size -= numberOfChildren + 1;
     }
@@ -81,9 +81,9 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
     return root;
   }
 
-  public static <T> void generateTreeDisplay(TreeNode<T> node, StringBuilder sb,
-                                             String prefix,
-                                             String childrenPrefix) {
+  public void generateTreeDisplay(TreeNode<T> n, StringBuilder sb,
+                                  String prefix, String childrenPrefix) {
+    var node = validate(n);
     sb.append(prefix);
     sb.append(node.data);
     sb.append('\n');
@@ -93,6 +93,7 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
       if (i < node.children.size() - 1) {
         generateTreeDisplay(child, sb, childrenPrefix + "├── ",
                             childrenPrefix + "│   ");
+
       } else {
         generateTreeDisplay(child, sb, childrenPrefix + "└── ",
                             childrenPrefix + "    ");
@@ -100,7 +101,7 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
     }
   }
 
-  public static <T> String generateTreeDisplay(TreeNode<T> root) {
+  public String generateTreeDisplay(GeneralTreeNode<T> root) {
     StringBuilder sb = new StringBuilder();
     generateTreeDisplay(root, sb, "", "");
     return sb.toString();
