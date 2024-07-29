@@ -1,34 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Directory implements FileSystem {
-    private String name;
-    private FileSystem parent;
+public class Directory extends FileSystem {
     private List<FileSystem> contents;
 
     public Directory(String name) {
-        this.name = name;
+        super(name);
         this.contents = new ArrayList<>();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void rename(String newName) {
-        this.name = newName;
-    }
-
-    @Override
-    public FileSystem getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(FileSystem parent) {
-        this.parent = parent;
     }
 
     @Override
@@ -38,15 +16,21 @@ public class Directory implements FileSystem {
 
     public void addItem(FileSystem item) {
         contents.add(item);
-        item.setParent(this);
+        updateSize(item.getSize());
     }
 
     public void removeItem(FileSystem item) {
-        contents.remove(item);
-        item.setParent(null);
+        if (contents.remove(item)) {
+            updateSize(-item.getSize());
+        }
     }
 
-    public List<FileSystem> getContents() {
+    private void updateSize(long change) {
+        size += change;
+        dateModified = LocalDateTime.now();
+    }
+
+    public List<FileSystemItem> getContents() {
         return new ArrayList<>(contents);
     }
 }

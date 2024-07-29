@@ -1,29 +1,14 @@
-public class File implements FileSystem {
-    private String name;
-    private FileSystem parent;
+public class File extends FileSystem {
+    private String extension;
 
-    public File(String name) {
-        this.name = name;
+    public File(String name, String extension, long size) {
+        super(name);
+        this.extension = extension;
+        this.size = size;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void rename(String newName) {
-        this.name = newName;
-    }
-
-    @Override
-    public FileSystem getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(FileSystem parent) {
-        this.parent = parent;
+    public String getExtension() {
+        return extension;
     }
 
     @Override
