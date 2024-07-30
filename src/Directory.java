@@ -4,8 +4,8 @@ import java.util.List;
 public class Directory extends FileSystem {
     private List<FileSystem> contents;
 
-    public Directory(String name, String type) {
-        super(name, type);
+    public Directory(String name) {
+        super(name);
         this.contents = new ArrayList<>();
     }
 
