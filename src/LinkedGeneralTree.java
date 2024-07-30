@@ -1,6 +1,6 @@
 import java.util.Iterator;
 
-public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
+public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T> {
     private GeneralTreeNode<T> root = null;
     private int size = 0;
 
@@ -77,32 +77,4 @@ public class LinkedGeneralTree<T> extends AbGeneralTree<T> {
         return root;
     }
 
-    public void generateTreeDisplay(TreeNode<T> n, StringBuilder sb, String prefix, String childrenPrefix) {
-        var node = validate(n);
-        sb.append(prefix);
-        sb.append(node.data);
-        sb.append('\n');
-
-        for (int i = 0; i < node.children.size(); i++) {
-            TreeNode<T> child = node.children.get(i);
-            if (i < node.children.size() - 1) {
-                generateTreeDisplay(child, sb, childrenPrefix + "├── ", childrenPrefix + "│   ");
-
-            } else {
-                generateTreeDisplay(child, sb, childrenPrefix + "└── ", childrenPrefix + "    ");
-            }
-        }
-    }
-
-    public String generateTreeDisplay(GeneralTreeNode<T> root) {
-        StringBuilder sb = new StringBuilder();
-        generateTreeDisplay(root, sb, "", "");
-        return sb.toString();
-    }
-
-    @Override
-    public String toString() {
-        return generateTreeDisplay(root);
-    }
-    
 }

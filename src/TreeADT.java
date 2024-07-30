@@ -1,6 +1,6 @@
 import java.util.Iterator;
 
-public interface TreeADT<T> extends Iterable<T> {
+public interface TreeADT<T extends Comparable<T>> extends Iterable<T> {
     TreeNode<T> root();
 
     TreeNode<T> parent(TreeNode<T> n) throws IllegalArgumentException;

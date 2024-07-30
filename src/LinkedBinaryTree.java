@@ -1,6 +1,6 @@
 import java.util.Iterator;
 
-public class LinkedBinaryTree<T> extends AbBinaryTree<T> {
+public class LinkedBinaryTree<T extends Comparable<T>> extends AbBinaryTree<T> {
     private BinaryTreeNode<T> root = null;
     private int size = 0;
 
