@@ -25,15 +25,15 @@ public abstract class FileSystem implements Comparable<FileSystem> {
     }
 
     public long getSize() {
-        return size;
+        return this.size;
     }
 
     public LocalDateTime getDateCreated() {
-        return dateCreated;
+        return this.dateCreated;
     }
 
     public LocalDateTime getDateModified() {
-        return dateModified;
+        return this.dateModified;
     }
 
     @Override
