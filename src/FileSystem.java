@@ -5,12 +5,14 @@ public abstract class FileSystem {
     protected long size;
     protected LocalDateTime dateCreated;
     protected LocalDateTime dateModified;
+    protected String type;
 
-    public FileSystem(String name) {
+    public FileSystem(String name, String type) {
         this.name = name;
         this.dateCreated = LocalDateTime.now();
         this.dateModified = LocalDateTime.now();
         this.size = 0;
+        this.type = type;
     }
 
     public String getName() {
@@ -23,16 +25,20 @@ public abstract class FileSystem {
     }
 
     public long getSize() {
-        return size;
+        return this.size;
     }
 
     public LocalDateTime getDateCreated() {
-        return dateCreated;
+        return this.dateCreated;
     }
 
     public LocalDateTime getDateModified() {
-        return dateModified;
+        return this.dateModified;
     }
 
+    public String getType(){
+        return this.type;
+    }
+    
     public abstract boolean isDirectory();
 }
