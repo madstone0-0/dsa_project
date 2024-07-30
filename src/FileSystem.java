@@ -1,6 +1,6 @@
 import java.time.LocalDateTime;
 
-public abstract class FileSystem {
+public abstract class FileSystem implements Comparable<FileSystem> {
     protected String name;
     protected long size;
     protected LocalDateTime dateCreated;
@@ -17,9 +17,11 @@ public abstract class FileSystem {
         return name;
     }
 
-    public void rename(String newName) {
+    public String rename(String newName) {
+        var temp = this.name;
         this.name = newName;
         this.dateModified = LocalDateTime.now();
+        return temp;
     }
 
     public long getSize() {
@@ -32,6 +34,19 @@ public abstract class FileSystem {
 
     public LocalDateTime getDateModified() {
         return dateModified;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) return true;
+        if (other == null) return false;
+        if (!(other instanceof FileSystem otherFileSystem)) return false;
+        return this.name.equals(otherFileSystem.name);
+    }
+
+    @Override
+    public int compareTo(FileSystem o) {
+        return this.name.compareTo(o.name);
     }
 
     public abstract boolean isDirectory();
