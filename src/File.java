@@ -1,8 +1,8 @@
 public class File extends FileSystem {
     private String extension;
 
-    public File(String name, String extension, long size, String type) {
-        super(name, type);
+    public File(String name, String extension, long size) {
+        super(name);
         this.extension = extension;
         this.size = size;
     }
