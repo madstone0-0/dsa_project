@@ -1,25 +1,44 @@
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 import static utils.PrintUtils.printf;
 import static utils.PrintUtils.print;
 import static utils.PrintUtils.println;
 
 public class Main {
-    public static boolean fileOrDir(Scanner in) {
-        print("Is the item a file (F) or directory (D) > ");
-        String choice = in.next().toLowerCase();
-        in.nextLine();
-        if (!choice.startsWith("f") && !choice.startsWith("d")) throw new InputMismatchException("Invalid item choice");
-        return choice.startsWith("f");
+
+    enum ItemType {
+        FILE, DIRECTORY
     }
 
+    private static ItemType promptForItemType(Scanner in) {
+        while (true) {
+            print("Is the item a file (F) or directory (D) > ");
+            String choice = in.next().trim().toUpperCase();
+            switch (choice) {
+                case "F":
+                    return ItemType.FILE;
+                case "D":
+                    return ItemType.DIRECTORY;
+                default:
+                    println("Invalid choice. Please enter 'F' for file or 'D' for directory.");
+            }
+        }
+    }
+
+//    public static boolean fileOrDir(Scanner in) {
+//        print("Is the item a file (F) or directory (D) > ");
+//        String choice = in.next().toLowerCase();
+//        in.nextLine();
+//        if (!choice.startsWith("f") && !choice.startsWith("d")) throw new InputMismatchException("Invalid item
+//        choice");
+//        return choice.startsWith("f");
+//    }
+
     public static void create(Scanner in, DirectoryTree tree) {
-        if (fileOrDir(in)) {
+        var item = promptForItemType(in);
+        if (item == ItemType.FILE) {
             print("Enter the name of the file with extension > ");
             String name = in.nextLine();
             print("Enter the size of the file in bytes > ");
@@ -29,12 +48,15 @@ public class Main {
                 throw new InputMismatchException("Invalid file name please include the extension");
             String fileName = nameSplit[0];
             String fileExtension = nameSplit[1];
-            tree.create(new File(fileName, fileExtension, size));
+            var file = tree.create(new File(fileName, fileExtension, size));
+            printf("Created file %s\n", file.data);
         } else {
             print("Enter the name of the directory > ");
             String name = in.nextLine();
-            tree.create(new Directory(name));
+            var dir = tree.create(new Directory(name));
+            printf("Created directory %s\n", dir.data);
         }
+
     }
 
     public static GeneralTreeNode<FileSystem> getChildChoice(Scanner in, DirectoryTree tree, String action) {
@@ -74,6 +96,7 @@ public class Main {
         GeneralTreeNode<FileSystem> choice = getChildChoice(in, tree, "delete");
         if (choice != null) {
             tree.remove(choice);
+            println("Deleted " + choice.data);
         }
     }
 
@@ -174,20 +197,11 @@ public class Main {
         boolean ascending = order.startsWith("y");
         in.nextLine();
         switch (choice) {
-            case 1:
-                tree.sortByName(ascending);
-                break;
-            case 2:
-                tree.sortBySize(ascending);
-                break;
-            case 3:
-                tree.sortByCreatedDate(ascending);
-                break;
-            case 4:
-                tree.sortByModifiedDate(ascending);
-                break;
-            default:
-                throw new InputMismatchException("Invalid sort choice");
+            case 1 -> tree.sortByName(ascending);
+            case 2 -> tree.sortBySize(ascending);
+            case 3 -> tree.sortByCreatedDate(ascending);
+            case 4 -> tree.sortByModifiedDate(ascending);
+            default -> throw new InputMismatchException("Invalid sort choice");
         }
     }
 
@@ -195,12 +209,14 @@ public class Main {
         if (-1000 < bytes && bytes < 1000) {
             return bytes + " B";
         }
-        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+
+        int pointer = 0;
+        String suffix = "KMGTPE";
         while (bytes <= -999_950 || bytes >= 999_950) {
             bytes /= 1000;
-            ci.next();
+            pointer++;
         }
-        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+        return String.format("%.1f %cB", bytes / 1000.0, suffix.charAt(pointer));
     }
 
     public static void stat(Scanner in, DirectoryTree tree) {
@@ -217,6 +233,119 @@ public class Main {
                 println("Size: " + formatSize(file.getSize()));
                 println("Extension: " + file.getExtension());
             }
+        }
+    }
+
+    public static void cut(Scanner in, DirectoryTree tree) {
+        print("Do you want cut a single item (Y) or multiple items (N) > ");
+        String choice = in.next().toLowerCase();
+
+        if (!choice.startsWith("y") && !choice.startsWith("n")) {
+            throw new InputMismatchException("Invalid choice");
+        }
+
+        ArrayList<GeneralTreeNode<FileSystem>> items = new ArrayList<>();
+        if (choice.startsWith("y")) {
+            var item = getChildChoice(in, tree, "cut");
+            if (item != null) items.add(item);
+        } else {
+            ArrayList<TreeNode<FileSystem>> contents = tree.getWd().children;
+
+            if (contents.isEmpty()) {
+                println("No children");
+                return;
+            } else if (contents.size() == 1) {
+                println("Only one child to move");
+                items.add((GeneralTreeNode<FileSystem>) contents.getFirst());
+                tree.cut(items);
+                return;
+            }
+
+            println("Enter all the ids of the items you wish to cut separated with a comma");
+            for (int i = 0; i < contents.size(); i++) {
+                printf("%d: %s\n", i, contents.get(i).data);
+            }
+
+            print("> ");
+            in.nextLine();
+            String idString = in.nextLine();
+            var ids = idString.split(",");
+            if (ids.length == 0 || (ids.length == 1 && ids[0].isEmpty())) {
+                throw new InputMismatchException("No items selected");
+            }
+
+            for (var id : ids) {
+                int index = Integer.parseInt(id.strip());
+                if (index < 0 || index >= contents.size()) {
+                    throw new InputMismatchException("Invalid item id");
+                }
+                items.add((GeneralTreeNode<FileSystem>) contents.get(index));
+            }
+        }
+        tree.cut(items);
+    }
+
+    public static void search(Scanner in, DirectoryTree tree) {
+        print("Enter the name of the item you want to search for > ");
+        String searchTerm = in.nextLine();
+        if (searchTerm.isBlank()) {
+            throw new InputMismatchException("Invalid search term");
+        }
+
+        var result = tree.search(searchTerm);
+        println(result);
+    }
+
+    public static void paste(Scanner in, DirectoryTree tree) {
+        var clipboard = tree.getClipboard();
+        if (clipboard.isEmpty()) {
+            println("Clipboard is empty");
+            return;
+        }
+        print("Do you want paste a single item (Y) or multiple items (N) > ");
+        String choice = in.next().toLowerCase();
+
+        if (!choice.startsWith("y") && !choice.startsWith("n")) {
+            throw new InputMismatchException("Invalid choice");
+        }
+
+        ArrayList<Integer> indices = new ArrayList<>();
+        if (choice.startsWith("y")) {
+            println("Enter the index of the item you want to paste");
+            printClipboardItems(clipboard);
+            print("> ");
+            int choiceIndex = in.nextInt();
+
+            if (choiceIndex < 0 || choiceIndex >= clipboard.size()) {
+                throw new InputMismatchException("Invalid item index");
+            }
+            indices.add(choiceIndex);
+        } else {
+            println("Enter all the ids of the items you wish to paste separated with a comma");
+            printClipboardItems(clipboard);
+            print("> ");
+            in.nextLine();
+            String idString = in.nextLine();
+            var ids = idString.strip().split(",");
+            if (ids.length == 0) {
+                throw new InputMismatchException("No items selected");
+            }
+            for (var id : ids) {
+                int index = Integer.parseInt(id.strip());
+                if (index < 0 || index >= clipboard.size()) {
+                    throw new InputMismatchException("Invalid item id");
+                }
+                indices.add(index);
+            }
+        }
+        tree.paste(indices);
+    }
+
+    private static void printClipboardItems(Set<GeneralTreeNode<FileSystem>> clipboard) {
+        int i = 0;
+        for (GeneralTreeNode<FileSystem> fileSystemGeneralTreeNode : clipboard) {
+            printf("%d: %s\n", i, fileSystemGeneralTreeNode.data);
+            i++;
         }
     }
 
@@ -240,10 +369,11 @@ public class Main {
             } catch (IllegalArgumentException e) {
             }
         }
-    }
 
-    public static void commandMode(Scanner in, DirectoryTree tree) {
-
+        tree.cd((GeneralTreeNode<FileSystem>) tree.getDirectoryTree().root());
+        tree.cd(tree.create(new Directory("paste")));
+        tree.create(new File("test", "txt", 100));
+        tree.cd((GeneralTreeNode<FileSystem>) tree.getDirectoryTree().root());
     }
 
     public static void menuMode(Scanner in, DirectoryTree tree) {
@@ -254,10 +384,13 @@ public class Main {
                       4 - Rename
                       5 - Sort
                       6 - Stat
-                      7 - Show directory structure
-                      8 - Print working directory
-                      9 - Help
-                      10 - Exit""";
+                      7 - Cut
+                      8 - Paste
+                      9 - Search
+                      10 - Show directory structure
+                      11 - Print working directory
+                      12 - Help
+                      13 - Exit""";
         println(help);
         boolean running = true;
         while (running) {
@@ -266,39 +399,23 @@ public class Main {
                 int choice = in.nextInt();
                 in.nextLine();
                 switch (choice) {
-                    case 1:
-                        create(in, tree);
-                        break;
-                    case 2:
-                        del(in, tree);
-                        break;
-                    case 3:
-                        cd(in, tree);
-                        break;
-                    case 4:
-                        rename(in, tree);
-                        break;
-                    case 5:
-                        sort(in, tree);
-                        break;
-                    case 6:
-                        stat(in, tree);
-                        break;
-                    case 7:
-                        println(tree);
-                        break;
-                    case 8:
-                        printWd(tree);
-                        break;
-                    case 9:
-                        println(help);
-                        break;
-                    case 10:
+                    case 1 -> create(in, tree);
+                    case 2 -> del(in, tree);
+                    case 3 -> cd(in, tree);
+                    case 4 -> rename(in, tree);
+                    case 5 -> sort(in, tree);
+                    case 6 -> stat(in, tree);
+                    case 7 -> cut(in, tree);
+                    case 8 -> paste(in, tree);
+                    case 9 -> search(in, tree);
+                    case 10 -> println(tree);
+                    case 11 -> printWd(tree);
+                    case 12 -> println(help);
+                    case 13 -> {
                         println("Exiting...");
                         running = false;
-                        break;
-                    default:
-                        throw new InputMismatchException("Invalid command choice");
+                    }
+                    default -> throw new InputMismatchException("Invalid command choice");
                 }
             } catch (InputMismatchException e) {
                 println("Invalid option: " + e.getMessage());

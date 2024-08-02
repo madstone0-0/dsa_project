@@ -50,4 +50,8 @@ public abstract class FileSystem implements Comparable<FileSystem> {
     }
 
     public abstract boolean isDirectory();
+
+    public void setDateModified(LocalDateTime dateModified) {
+        this.dateModified = dateModified;
+    }
 }

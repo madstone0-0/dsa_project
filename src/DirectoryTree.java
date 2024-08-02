@@ -1,18 +1,22 @@
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 
 public class DirectoryTree {
     private final LinkedGeneralTree<FileSystem> directoryTree = new LinkedGeneralTree<>();
     private final GeneralTreeNode<FileSystem> root;
     private GeneralTreeNode<FileSystem> wd;
     private Comparator<? super TreeNode<FileSystem>> sorter = Comparator.comparing(o -> o.data.getName());
+    private final Set<GeneralTreeNode<FileSystem>> clipboard = new HashSet<>();
 
     DirectoryTree(FileSystem root) {
         this.root = this.directoryTree.addRoot(root);
         this.wd = this.root;
     }
-
 
     public void sortByName(boolean ascending) {
         sorter = Comparator.comparing(n -> n.data.getName());
@@ -41,6 +45,42 @@ public class DirectoryTree {
 
     private boolean existsInCurrentDirectory(String name) {
         return this.wd.children.stream().anyMatch(node -> node.data.getName().equals(name));
+    }
+
+    public void cut(ArrayList<GeneralTreeNode<FileSystem>> items) {
+
+        clipboard.addAll(items);
+        for (var item : items) {
+            ((GeneralTreeNode<FileSystem>) item.parent).children.remove(item);
+            item.parent = item;
+        }
+
+        var folder = wd.data;
+        if (folder instanceof Directory) {
+            folder.setDateModified(LocalDateTime.now());
+        }
+    }
+
+    public void paste(ArrayList<Integer> indices) {
+        int i = 0;
+        for (var index : indices) {
+            var item = clipboard.iterator().next();
+            if (index == i) {
+                clipboard.remove(item);
+                this.wd.children.add(item);
+            }
+            i++;
+        }
+
+        var folder = wd.data;
+        if (folder instanceof Directory) {
+            folder.setDateModified(LocalDateTime.now());
+        }
+    }
+
+    public String search(String name) {
+        BinarySearchTree<FileSystem> bst = new BinarySearchTree<>(wd);
+        return bst.searchResult(new Directory(name), wd);
     }
 
     public GeneralTreeNode<FileSystem> create(FileSystem dir) {
@@ -75,6 +115,10 @@ public class DirectoryTree {
 
     public LinkedGeneralTree<FileSystem> getDirectoryTree() {
         return this.directoryTree;
+    }
+
+    public Set<GeneralTreeNode<FileSystem>> getClipboard() {
+        return clipboard;
     }
 
     public void generateTreeDisplay(GeneralTreeNode<FileSystem> node, StringBuilder sb, String prefix,

@@ -15,4 +15,8 @@ public class BinaryTreeNode<T extends Comparable<T>> extends TreeNode<T> {
     public BinaryTreeNode(T data, BinaryTreeNode<T> parent) {
         super(data, parent);
     }
+
+    public BinaryTreeNode(T data, TreeNode<T> parent) {
+        super(data, parent);
+    }
 }

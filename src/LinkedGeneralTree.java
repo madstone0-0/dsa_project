@@ -23,11 +23,6 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return null;
-    }
-
-    @Override
     public TreeNode<T> parent(TreeNode<T> n) throws IllegalArgumentException {
         var node = validate(n);
         return node.parent;
