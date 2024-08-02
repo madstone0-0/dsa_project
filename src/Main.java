@@ -1,17 +1,39 @@
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import java.util.*;
 
 import static utils.PrintUtils.printf;
 import static utils.PrintUtils.print;
 import static utils.PrintUtils.println;
 
+/**
+ * Main program class for the virtual file system application, supports the following operations
+ * <ul>
+ *     <li> Create a file or directory </li>
+ *     <li> Delete a file or directory </li>
+ *     <li> Change directory </li>
+ *     <li> Rename a file or directory </li>
+ *     <li> Sort files and directories </li>
+ *     <li> View file or directory stats </li>
+ *     <li> Cut and paste files and directories </li>
+ *     <li> Search for a file or directory </li>
+ *     <li> Print the directory structure </li>
+ *     <li> Print the current working directory </li>
+ * </ul>
+ */
 public class Main {
 
+    /**
+     * Represents the type of file system item
+     */
     enum ItemType {
         FILE, DIRECTORY
     }
 
+    /**
+     * Prompts the user for the type of file system item
+     *
+     * @param in the scanner object
+     * @return the type of file system item
+     */
     private static ItemType promptForItemType(Scanner in) {
         while (true) {
             print("Is the item a file (F) or directory (D) > ");
@@ -27,15 +49,12 @@ public class Main {
         }
     }
 
-//    public static boolean fileOrDir(Scanner in) {
-//        print("Is the item a file (F) or directory (D) > ");
-//        String choice = in.next().toLowerCase();
-//        in.nextLine();
-//        if (!choice.startsWith("f") && !choice.startsWith("d")) throw new InputMismatchException("Invalid item
-//        choice");
-//        return choice.startsWith("f");
-//    }
-
+    /**
+     * Create item helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void create(Scanner in, DirectoryTree tree) {
         var item = promptForItemType(in);
         if (item == ItemType.FILE) {
@@ -59,10 +78,27 @@ public class Main {
 
     }
 
+    /**
+     * Get child choice overload with default action
+     *
+     * @param in     the scanner object
+     * @param tree   the directory tree
+     * @param action the action to perform
+     * @return the child choice
+     */
     public static GeneralTreeNode<FileSystem> getChildChoice(Scanner in, DirectoryTree tree, String action) {
         return getChildChoice(in, tree, action, false);
     }
 
+    /**
+     * Get child choice helper method to help with selecting a child node
+     *
+     * @param in            the scanner object
+     * @param tree          the directory tree
+     * @param action        the action to perform
+     * @param defaultAction whether to perform the action automatically when there is only one child
+     * @return the child choice
+     */
     public static GeneralTreeNode<FileSystem> getChildChoice(Scanner in, DirectoryTree tree, String action,
                                                              boolean defaultAction) {
         ArrayList<TreeNode<FileSystem>> contents = tree.getWd().children;
@@ -92,7 +128,13 @@ public class Main {
         }
     }
 
-    public static void del(Scanner in, DirectoryTree tree) {
+    /**
+     * Delete item helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
+    public static void delete(Scanner in, DirectoryTree tree) {
         GeneralTreeNode<FileSystem> choice = getChildChoice(in, tree, "delete");
         if (choice != null) {
             tree.remove(choice);
@@ -100,6 +142,14 @@ public class Main {
         }
     }
 
+    /**
+     * Helper method to prompt the user to select the parent or child of a directory
+     *
+     * @param in     the scanner object
+     * @param tree   the directory tree
+     * @param action the action to perform
+     * @return the choice
+     */
     public static Boolean parentOrChild(Scanner in, DirectoryTree tree, String action) {
         println("Do you wish to " + action + " directory's parent (Y) or a child directory (N)");
         var wd = tree.getWd();
@@ -116,10 +166,21 @@ public class Main {
         return false;
     }
 
+    /**
+     * Print the current working directory
+     *
+     * @param directoryTree the directory tree
+     */
     private static void printWd(DirectoryTree directoryTree) {
         println(directoryTree.getWd().data);
     }
 
+    /**
+     * Change directory helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void cd(Scanner in, DirectoryTree tree) {
         GeneralTreeNode<FileSystem> wd = tree.getWd();
 
@@ -147,10 +208,22 @@ public class Main {
         }
     }
 
+    /**
+     * Helper method to display an item rename
+     *
+     * @param newName the new name of the item
+     * @param oldName the old name of the item
+     */
     private static void renamePrompt(String newName, String oldName) {
         printf("Renamed %s to %s\n", oldName, newName);
     }
 
+    /**
+     * Rename item helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void rename(Scanner in, DirectoryTree tree) {
         var choice = parentOrChild(in, tree, "rename the");
         var wd = tree.getWd();
@@ -178,6 +251,12 @@ public class Main {
         }
     }
 
+    /**
+     * Sort item helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void sort(Scanner in, DirectoryTree tree) {
         println("""
                 Sort by:
@@ -205,6 +284,12 @@ public class Main {
         }
     }
 
+    /**
+     * Helper method to format the size of a file in bytes
+     *
+     * @param bytes the size in bytes
+     * @return the formatted size
+     */
     public static String formatSize(long bytes) {
         if (-1000 < bytes && bytes < 1000) {
             return bytes + " B";
@@ -219,6 +304,12 @@ public class Main {
         return String.format("%.1f %cB", bytes / 1000.0, suffix.charAt(pointer));
     }
 
+    /**
+     * Stat item helper method. Displays information about a file or directory
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void stat(Scanner in, DirectoryTree tree) {
         GeneralTreeNode<FileSystem> choice = getChildChoice(in, tree, "view stats for");
         if (choice != null) {
@@ -236,6 +327,12 @@ public class Main {
         }
     }
 
+    /**
+     * Cut item(s) helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void cut(Scanner in, DirectoryTree tree) {
         print("Do you want cut a single item (Y) or multiple items (N) > ");
         String choice = in.next().toLowerCase();
@@ -285,6 +382,12 @@ public class Main {
         tree.cut(items);
     }
 
+    /**
+     * Search item helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void search(Scanner in, DirectoryTree tree) {
         print("Enter the name of the item you want to search for > ");
         String searchTerm = in.nextLine();
@@ -296,6 +399,13 @@ public class Main {
         println(result);
     }
 
+
+    /**
+     * Paste item(s) helper method
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void paste(Scanner in, DirectoryTree tree) {
         var clipboard = tree.getClipboard();
         if (clipboard.isEmpty()) {
@@ -341,6 +451,11 @@ public class Main {
         tree.paste(indices);
     }
 
+    /**
+     * Helper method to print the items in the clipboard
+     *
+     * @param clipboard the clipboard
+     */
     private static void printClipboardItems(Set<GeneralTreeNode<FileSystem>> clipboard) {
         int i = 0;
         for (GeneralTreeNode<FileSystem> fileSystemGeneralTreeNode : clipboard) {
@@ -348,6 +463,7 @@ public class Main {
             i++;
         }
     }
+
 
     private static void testTree(DirectoryTree tree) {
         var rand = new Random();
@@ -376,6 +492,12 @@ public class Main {
         tree.cd((GeneralTreeNode<FileSystem>) tree.getDirectoryTree().root());
     }
 
+    /**
+     * Menu mode for the virtual file system application
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
     public static void menuMode(Scanner in, DirectoryTree tree) {
         String help = """
                       1 - Create
@@ -400,7 +522,7 @@ public class Main {
                 in.nextLine();
                 switch (choice) {
                     case 1 -> create(in, tree);
-                    case 2 -> del(in, tree);
+                    case 2 -> delete(in, tree);
                     case 3 -> cd(in, tree);
                     case 4 -> rename(in, tree);
                     case 5 -> sort(in, tree);
