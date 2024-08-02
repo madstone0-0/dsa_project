@@ -7,15 +7,18 @@ public class File extends FileSystem {
         this.size = size;
     }
 
+    //Getter for file extension
     public String getExtension() {
         return extension;
     }
 
+    //Indicates that this is not a directory
     @Override
     public boolean isDirectory() {
         return false;
     }
 
+    //Renames the file, potentially changing its extension
     @Override
     public String rename(String newName) {
         var newNameArr = newName.split("\\.");
@@ -31,6 +34,7 @@ public class File extends FileSystem {
         return oldName;
     }
 
+    //String representation of the file
     @Override
     public String toString() {
         return String.format("%s.%s", name, extension);
