@@ -13,11 +13,13 @@ public class Directory extends FileSystem {
         return true;
     }
 
+    //Updates the size of the directory and modifies the last modified date
     private void updateSize(long change) {
         size += change;
         dateModified = LocalDateTime.now();
     }
 
+    //String representation of the directory
     @Override
     public String toString() {
         return String.format("%s/", name);
