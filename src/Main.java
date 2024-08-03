@@ -24,17 +24,18 @@ public class Main {
         // Create the src directory and its substructure
         GeneralTreeNode<FileSystem> srcNode = tree.create(new Directory("src"));
         tree.cd(srcNode);
+        var sizeRand = new Random();
 
         String[] srcFiles = {"AbBinaryTree", "AbGeneralTree", "AbTree", "BinarySearchTree", "BinaryTreeADT",
                 "BinaryTreeNode", "CommandMode", "Common", "Directory", "DirectoryTree", "File", "FileSystem",
                 "GeneralTreeNode.java", "LinkedGeneralTree", "Main", "MenuMode", "TreeADT", "TreeNode"};
         GeneralTreeNode<FileSystem> utilsNode = tree.create(new Directory("utils"));
         tree.cd(utilsNode);
-        tree.create(new File("PrintUtils", "java", 100));
+        tree.create(new File("PrintUtils", "java", sizeRand.nextInt(40000)));
         tree.cd((GeneralTreeNode<FileSystem>) tree.getWd().parent);
 
         for (String fileName : srcFiles) {
-            tree.create(new File(fileName, "java", 100));
+            tree.create(new File(fileName, "java", sizeRand.nextInt(40000)));
         }
         tree.cd((GeneralTreeNode<FileSystem>) tree.getDirectoryTree().root());
 
@@ -51,18 +52,18 @@ public class Main {
                 "GeneralTreeNode", "LinkedGeneralTree", "Main", "MenuMode$ItemType", "MenuMode", "TreeADT", "TreeNode"};
         utilsNode = tree.create(new Directory("utils"));
         tree.cd(utilsNode);
-        tree.create(new File("PrintUtils", "class", 100));
+        tree.create(new File("PrintUtils", "class", sizeRand.nextInt(40000)));
         tree.cd((GeneralTreeNode<FileSystem>) tree.getWd().parent);
 
         for (String fileName : outFiles) {
-            tree.create(new File(fileName, "class", 100));
+            tree.create(new File(fileName, "class", sizeRand.nextInt(40000)));
         }
         tree.cd((GeneralTreeNode<FileSystem>) tree.getDirectoryTree().root());
 
         // Create the root-level files
         String[] rootFiles = {"dsa_project"};
         for (String fileName : rootFiles) {
-            tree.create(new File(fileName, "iml", 100));
+            tree.create(new File(fileName, "iml", sizeRand.nextInt(40000)));
         }
     }
 
