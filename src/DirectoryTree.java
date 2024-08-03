@@ -1,8 +1,6 @@
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +19,7 @@ public class DirectoryTree {
 
     /**
      * Constructor with a specified root.
-     * 
+     *
      * @param root the root file system node to initialize the tree.
      */
     DirectoryTree(FileSystem root) {
@@ -31,7 +29,7 @@ public class DirectoryTree {
 
     /**
      * Sets the sorter for tree nodes by name.
-     * 
+     *
      * @param ascending true for ascending order, false for descending order.
      */
     public void sortByName(boolean ascending) {
@@ -41,7 +39,7 @@ public class DirectoryTree {
 
     /**
      * Sets the sorter for tree nodes by size.
-     * 
+     *
      * @param ascending true for ascending order, false for descending order.
      */
     public void sortBySize(boolean ascending) {
@@ -51,7 +49,7 @@ public class DirectoryTree {
 
     /**
      * Sets the sorter for tree nodes by modified date.
-     * 
+     *
      * @param ascending true for ascending order, false for descending order.
      */
     public void sortByModifiedDate(boolean ascending) {
@@ -61,7 +59,7 @@ public class DirectoryTree {
 
     /**
      * Sets the sorter for tree nodes by created date.
-     * 
+     *
      * @param ascending true for ascending order, false for descending order.
      */
     public void sortByCreatedDate(boolean ascending) {
@@ -79,7 +77,7 @@ public class DirectoryTree {
 
     /**
      * Checks if a file/directory with the given name already exists in the current directory.
-     * 
+     *
      * @param name the name of the file or directory to check.
      * @return true if the file/directory exists, false otherwise.
      */
@@ -123,9 +121,9 @@ public class DirectoryTree {
         return bst.searchResult(new Directory(name), wd);
     }
 
-/**
+    /**
      * Creates a new file or directory in the current working directory.
-     * 
+     *
      * @param dir the file or directory to create.
      * @return the node representing the newly created file or directory.
      * @throws IllegalArgumentException if a file/directory with the same name already exists.
@@ -139,7 +137,7 @@ public class DirectoryTree {
 
     /**
      * Removes a file or directory from the tree.
-     * 
+     *
      * @param dir the node representing the file or directory to remove.
      */
     public void remove(GeneralTreeNode<FileSystem> dir) {
@@ -148,8 +146,8 @@ public class DirectoryTree {
 
     /**
      * Renames a file or directory.
-     * 
-     * @param dir the node representing the file or directory to rename.
+     *
+     * @param dir     the node representing the file or directory to rename.
      * @param newName the new name for the file or directory.
      * @return the new name of the file or directory.
      * @throws IllegalArgumentException if a file/directory with the new name already exists.
@@ -163,7 +161,7 @@ public class DirectoryTree {
 
     /**
      * Getter for the current working directory.
-     * 
+     *
      * @return the current working directory node.
      */
     public GeneralTreeNode<FileSystem> getWd() {
@@ -172,7 +170,7 @@ public class DirectoryTree {
 
     /**
      * Changes the current working directory.
-     * 
+     *
      * @param dir the new current working directory.
      */
     public void cd(GeneralTreeNode<FileSystem> dir) {
@@ -180,8 +178,118 @@ public class DirectoryTree {
     }
 
     /**
+     * Changes the current working directory to the last folder in the specified path.
+     * Returns the old working directory.
+     * Throws an exception if a folder in the path does not exist.
+     *
+     * @param path the string path to navigate.
+     * @return the previous working directory node.
+     * @throws IllegalArgumentException if a folder in the path does not exist.
+     */
+    public GeneralTreeNode<FileSystem> cd(String path) {
+        // Split the path by the file separator
+        String[] directories = path.split("/");
+        GeneralTreeNode<FileSystem> oldWd = this.wd; // Store the old working directory
+        GeneralTreeNode<FileSystem> current = this.wd;
+
+        if (directories.length == 0 || (directories.length == 1 && directories[0].isBlank())) {
+            return oldWd;
+        }
+
+        if (oldWd.data.getName().equals(directories[0])) directories[0] = "";
+
+        for (String dir : directories) {
+            if (dir.isEmpty() || dir.equals(".")) {
+                continue; // Skip empty strings and current directory references
+            } else if (dir.equals("..")) {
+                if (current.parent != null) {
+                    current = (GeneralTreeNode<FileSystem>) current.parent;
+                } else {
+                    throw new InputMismatchException("Cannot navigate above the root directory");
+                }
+            } else {
+                boolean found = false;
+                for (TreeNode<FileSystem> child : current.children) {
+                    if (child.data.getName().equals(dir) && child.data instanceof Directory) {
+                        current = (GeneralTreeNode<FileSystem>) child;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    throw new InputMismatchException("Directory does not exist in current directory: " + dir);
+                }
+            }
+        }
+
+        this.wd = current; // Change the current working directory
+        return oldWd; // Return the old working directory
+    }
+
+    public void move(GeneralTreeNode<FileSystem> source) {
+
+        if (source == wd) {
+            throw new InputMismatchException("Cannot move the current working directory");
+        }
+        if (source == root) {
+            throw new InputMismatchException("Cannot move the root directory");
+        }
+        if (source.parent == null) {
+            throw new InputMismatchException("Cannot move the parent directory");
+        }
+
+
+        GeneralTreeNode<FileSystem> parent = (GeneralTreeNode<FileSystem>) source.parent;
+        parent.children.remove(source);
+        wd.children.add(source);
+
+        var folder = wd.data;
+        if (folder instanceof Directory) {
+            folder.setDateModified(LocalDateTime.now());
+        }
+    }
+
+    public GeneralTreeNode<FileSystem> getNodeByPath(String path) {
+        // Split the path by the file separator
+        String[] directories = path.split("/");
+        GeneralTreeNode<FileSystem> current = this.wd;
+
+        if (current.data.getName().equals(directories[0])) directories[0] = "";
+
+        for (String dir : directories) {
+            if (dir.isEmpty() || dir.equals(".")) {
+                continue; // Skip empty strings and current directory references
+            } else if (dir.equals("..")) {
+                if (current.parent != null) {
+                    current = (GeneralTreeNode<FileSystem>) current.parent;
+                } else {
+                    throw new InputMismatchException("Cannot navigate above the root directory");
+                }
+            } else {
+                boolean found = false;
+                for (TreeNode<FileSystem> child : current.children) {
+                    if (child.data instanceof Directory && child.data.getName().equals(dir)) {
+                        current = (GeneralTreeNode<FileSystem>) child;
+                        found = true;
+                        break;
+                    } else if (child.data instanceof File && ((File) child.data).getFullName().equals(dir)) {
+                        current = (GeneralTreeNode<FileSystem>) child;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    throw new InputMismatchException("Item does not exist: " + dir);
+                }
+            }
+        }
+
+        return current;
+    }
+
+    /**
      * Checks if a given node is the root of the tree.
-     * 
+     *
      * @param dir the node to check.
      * @return true if the node is the root, false otherwise.
      */
@@ -191,7 +299,7 @@ public class DirectoryTree {
 
     /**
      * Getter for the directory tree.
-     * 
+     *
      * @return the directory tree.
      */
     public LinkedGeneralTree<FileSystem> getDirectoryTree() {
@@ -204,13 +312,13 @@ public class DirectoryTree {
 
     /**
      * Recursive method to generate a string representation of the tree structure.
-     * 
-     * @param node the current node to process.
-     * @param sb the StringBuilder to append the string representation.
-     * @param prefix the prefix to use for the current node.
+     *
+     * @param node           the current node to process.
+     * @param sb             the StringBuilder to append the string representation.
+     * @param prefix         the prefix to use for the current node.
      * @param childrenPrefix the prefix to use for child nodes.
      */
-     public void generateTreeDisplay(GeneralTreeNode<FileSystem> node, StringBuilder sb, String prefix,
+    public void generateTreeDisplay(GeneralTreeNode<FileSystem> node, StringBuilder sb, String prefix,
                                     String childrenPrefix) {
         sb.append(prefix);
         sb.append(node.data);
@@ -230,7 +338,7 @@ public class DirectoryTree {
 
     /**
      * Generates a string representation of the entire tree.
-     * 
+     *
      * @return the string representation of the tree.
      */
     public String generateTreeDisplay() {
@@ -241,7 +349,7 @@ public class DirectoryTree {
 
     /**
      * Provides a string representation of the directory tree.
-     * 
+     *
      * @return the string representation of the directory tree.
      */
     @Override

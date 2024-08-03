@@ -34,6 +34,10 @@ public class File extends FileSystem {
         return oldName;
     }
 
+    public String getFullName() {
+        return name + "." + extension;
+    }
+
     //String representation of the file
     @Override
     public String toString() {
