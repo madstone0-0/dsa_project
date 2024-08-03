@@ -112,7 +112,7 @@ public class MenuMode {
         print("> ");
         choice = in.nextInt();
 
-        if (choice <= contents.size() && choice >= 0) {
+        if (choice < contents.size() && choice >= 0) {
             return (GeneralTreeNode<FileSystem>) contents.get(choice);
         } else {
             throw new InputMismatchException("Invalid child choice");
@@ -448,13 +448,13 @@ public class MenuMode {
                 }
             } catch (InputMismatchException e) {
                 println("Invalid option: " + e.getMessage());
-                in.nextLine();
+//                in.nextLine();
             } catch (UnsupportedOperationException e) {
                 println("Invalid Operation: " + e.getMessage());
-                in.nextLine();
+//                in.nextLine();
             } catch (NumberFormatException e) {
                 println("Invalid number: " + e.getMessage());
-                in.nextLine();
+//                in.nextLine();
             }
         }
     }

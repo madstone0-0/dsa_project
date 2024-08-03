@@ -266,13 +266,13 @@ public class CommandMode {
                 }
             } catch (InputMismatchException e) {
                 println("Invalid option: " + e.getMessage());
-                in.nextLine();
+//                in.nextLine(); // Clear the buffer in case of invalid input
             } catch (UnsupportedOperationException e) {
                 println("Invalid Operation: " + e.getMessage());
-                in.nextLine();
+//                in.nextLine(); // Clear the buffer in case of invalid input
             } catch (NumberFormatException e) {
                 println("Invalid number: " + e.getMessage());
-                in.nextLine();
+//                in.nextLine(); // Clear the buffer in case of invalid input
             }
         }
     }

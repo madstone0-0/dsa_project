@@ -178,6 +178,9 @@ public class DirectoryTree {
      * @param dir the node representing the file or directory to remove.
      */
     public void remove(GeneralTreeNode<FileSystem> dir) {
+        if (dir == wd) {
+            cd((GeneralTreeNode<FileSystem>) dir.parent);
+        }
         this.directoryTree.remove(dir); // Remove node from tree
     }
 
