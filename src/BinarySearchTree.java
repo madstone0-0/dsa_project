@@ -1,13 +1,9 @@
-import com.sun.source.tree.Tree;
-
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
 
 /**
  * Represents a binary search tree (BST) where each node is a BinaryTreeNode.
  * Provides methods for insertion, searching, and traversing the tree.
- * 
+ *
  * @param <T> the type of data stored in the tree nodes, which must be comparable.
  */
 class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
@@ -25,7 +21,7 @@ class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
 
     /**
      * Inserts a new node into the binary search tree.
-     * 
+     *
      * @param n the node to insert into the tree.
      */
     public void insert(TreeNode<T> n) {
@@ -35,9 +31,9 @@ class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
 
     /**
      * Recursively inserts a new node into the binary search tree.
-     * 
+     *
      * @param root the current root of the subtree.
-     * @param n the node to insert.
+     * @param n    the node to insert.
      * @return the new root of the subtree.
      */
     private BinaryTreeNode<T> insertRec(BinaryTreeNode<T> root, TreeNode<T> n) {
@@ -58,8 +54,8 @@ class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
 
     /**
      * Collects all nodes in the subtree rooted at the given node using preorder traversal.
-     * 
-     * @param n the root node of the subtree.
+     *
+     * @param n    the root node of the subtree.
      * @param snap the list to store the nodes.
      */
     protected void preorderSubtree(TreeNode<T> n, ArrayList<TreeNode<T>> snap) {
@@ -72,7 +68,7 @@ class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
 
     /**
      * Constructs a BinarySearchTree from a given node using preorder traversal.
-     * 
+     *
      * @param node the root node of the subtree to initialize the tree.
      * @throws IllegalArgumentException if the node is null.
      */
@@ -90,7 +86,7 @@ class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
 
     /**
      * Validates whether a given node is a BinaryTreeNode and is part of the tree.
-     * 
+     *
      * @param n the node to validate.
      * @return the validated BinaryTreeNode.
      * @throws IllegalArgumentException if the node is invalid.
@@ -119,7 +115,7 @@ class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
 
     /**
      * Searches for a node with the specified key in the tree.
-     * 
+     *
      * @param key the key to search for.
      * @return the node with the specified key, or null if not found.
      */
@@ -137,9 +133,9 @@ class BinarySearchTree<T extends Comparable<T>> extends AbBinaryTree<T> {
 
     /**
      * Searches for a node with the specified key and returns the path from the node to the specified working directory.
-     * 
+     *
      * @param key the key to search for.
-     * @param wd the working directory to which the path should lead.
+     * @param wd  the working directory to which the path should lead.
      * @return the path from the node to the working directory as a string.
      */
     String searchResult(T key, TreeNode<T> wd) {

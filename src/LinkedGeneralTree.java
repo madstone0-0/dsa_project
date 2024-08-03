@@ -1,23 +1,21 @@
-import java.util.Iterator;
-
 /**
  * Implementation of a general tree data structure using a linked representation.
  * This tree allows nodes to have any number of children and supports basic tree operations.
- * 
+ *
  * @param <T> The type of elements stored in the tree. It must be comparable.
  */
 public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T> {
-    
+
     // The root node of the tree
     private GeneralTreeNode<T> root = null;
-    
+
     // The number of nodes in the tree
     private int size = 0;
 
     /**
      * Creates a new tree node with the specified value and parent.
-     * 
-     * @param val The value to be stored in the new node.
+     *
+     * @param val    The value to be stored in the new node.
      * @param parent The parent of the new node.
      * @return A newly created GeneralTreeNode with the given value and parent.
      */
@@ -33,7 +31,7 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Validates if a given node is a valid GeneralTreeNode and is still in the tree.
-     * 
+     *
      * @param n The node to validate.
      * @return The validated GeneralTreeNode.
      * @throws IllegalArgumentException if the node is not a GeneralTreeNode or if it is no longer in the tree.
@@ -48,7 +46,7 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Returns the number of nodes in the tree.
-     * 
+     *
      * @return The size of the tree.
      */
     @Override
@@ -58,7 +56,7 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Returns the parent of a given node.
-     * 
+     *
      * @param n The node whose parent is to be retrieved.
      * @return The parent node of the specified node.
      * @throws IllegalArgumentException if the node is invalid.
@@ -71,7 +69,7 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Adds a new root to the tree with the specified value.
-     * 
+     *
      * @param val The value to be stored in the root node.
      * @return The newly created root node.
      * @throws IllegalArgumentException if the tree is not empty.
@@ -85,8 +83,8 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Adds a child node with the specified value to a given parent node.
-     * 
-     * @param n The parent node to which the child will be added.
+     *
+     * @param n   The parent node to which the child will be added.
      * @param val The value to be stored in the child node.
      * @return The newly created child node.
      * @throws IllegalArgumentException if the parent node is invalid.
@@ -101,8 +99,8 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Sets the value of a given node and returns the old value.
-     * 
-     * @param n The node whose value is to be changed.
+     *
+     * @param n   The node whose value is to be changed.
      * @param val The new value to set in the node.
      * @return The old value of the node.
      * @throws IllegalArgumentException if the node is invalid.
@@ -116,7 +114,7 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Removes a given node from the tree.
-     * 
+     *
      * @param n The node to be removed.
      * @throws UnsupportedOperationException if attempting to remove the root node.
      */
@@ -143,7 +141,7 @@ public class LinkedGeneralTree<T extends Comparable<T>> extends AbGeneralTree<T>
 
     /**
      * Returns the root node of the tree.
-     * 
+     *
      * @return The root node of the tree.
      */
     @Override

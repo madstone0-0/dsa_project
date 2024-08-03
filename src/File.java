@@ -8,10 +8,10 @@ public class File extends FileSystem {
 
     /**
      * Constructs a File with the specified name, extension, and size.
-     * 
-     * @param name The name of the file.
+     *
+     * @param name      The name of the file.
      * @param extension The file's extension (e.g., "txt").
-     * @param size The size of the file in bytes.
+     * @param size      The size of the file in bytes.
      */
     public File(String name, String extension, long size) {
         super(name);
@@ -21,7 +21,7 @@ public class File extends FileSystem {
 
     /**
      * Returns the extension of the file.
-     * 
+     *
      * @return The file's extension.
      */
     public String getExtension() {
@@ -30,7 +30,7 @@ public class File extends FileSystem {
 
     /**
      * Indicates that this instance is not a directory.
-     * 
+     *
      * @return false, as this is a file and not a directory.
      */
     @Override
@@ -40,7 +40,7 @@ public class File extends FileSystem {
 
     /**
      * Renames the file, potentially changing its extension.
-     * 
+     *
      * @param newName The new name for the file, which may include an extension.
      * @return The old name of the file, including its previous extension if changed.
      */
@@ -48,7 +48,7 @@ public class File extends FileSystem {
     public String rename(String newName) {
         var newNameArr = newName.split("\\.");
         String oldName = name;
-        
+
         // Check if the new name includes an extension
         if (newNameArr.length != 2) {
             // No extension in the new name
@@ -60,17 +60,22 @@ public class File extends FileSystem {
             extension = newNameArr[1];
             oldName = String.format("%s.%s", oldName, oldExtension);
         }
-        
+
         return oldName;
     }
 
+    /**
+     * Returns the full name of the file, including its extension.
+     *
+     * @return The full name of the file, formatted as "name.extension".
+     */
     public String getFullName() {
         return name + "." + extension;
     }
 
-      /**
+    /**
      * Returns a string representation of the file, including its name and extension.
-     * 
+     *
      * @return A string representing the file, formatted as "name.extension".
      */
     @Override

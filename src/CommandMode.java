@@ -4,15 +4,20 @@ import java.util.Scanner;
 
 import static utils.PrintUtils.*;
 
+/**
+ * Represents the command mode for the virtual file system application.
+ * Allows the user to interact with the virtual file system using commands equivalent to unix based system commands
+ * taking into account the limitations of java's pattern matching capabilities
+ */
 public class CommandMode {
 
     /**
      * Create file helper method for command mode
      *
-     * @param in
-     * @param tree
+     * @param in   the scanner object
+     * @param tree the directory tree
      */
-    public static void createFileCommand(Scanner in, DirectoryTree tree) {
+    public static void createFile(Scanner in, DirectoryTree tree) {
         println("Usage: <file_path> <size>");
         print("(create_file)> ");
         String nameSize = in.nextLine();
@@ -38,10 +43,10 @@ public class CommandMode {
     /**
      * Create directory helper method for command mode
      *
-     * @param in
-     * @param tree
+     * @param in   the scanner object
+     * @param tree the directory tree
      */
-    public static void createDirectoryCommand(Scanner in, DirectoryTree tree) {
+    public static void createDirectory(Scanner in, DirectoryTree tree) {
         println("Usage: <dir_path>");
         print("(create_directory)> ");
         String name = in.nextLine();
@@ -60,10 +65,10 @@ public class CommandMode {
     /**
      * Delete item helper method for command mode
      *
-     * @param in
-     * @param tree
+     * @param in   the scanner object
+     * @param tree the directory tree
      */
-    public static void deleteCommand(Scanner in, DirectoryTree tree) {
+    public static void delete(Scanner in, DirectoryTree tree) {
         println("Usage: <path>");
         print("(delete)> ");
         String path = in.nextLine();
@@ -77,7 +82,13 @@ public class CommandMode {
         }
     }
 
-    public static void cdCommand(Scanner in, DirectoryTree tree) {
+    /**
+     * Change directory helper method for command mode
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
+    public static void cd(Scanner in, DirectoryTree tree) {
         println("Usage: <path>");
         print("(cd)> ");
         String path = in.nextLine();
@@ -96,7 +107,13 @@ public class CommandMode {
     }
 
 
-    public static void renameCommand(Scanner in, DirectoryTree tree) {
+    /**
+     * Rename item helper method for command mode
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
+    public static void rename(Scanner in, DirectoryTree tree) {
         println("Usage: <path> <new_name>");
         print("(rename)> ");
         String pathName = in.nextLine();
@@ -114,10 +131,10 @@ public class CommandMode {
     /**
      * Sort item helper method for command mode
      *
-     * @param in
-     * @param tree
+     * @param in   the scanner object
+     * @param tree the directory tree
      */
-    public static void sortCommand(Scanner in, DirectoryTree tree) {
+    public static void sort(Scanner in, DirectoryTree tree) {
         println("Usage: <option>");
         String[] opts = {"name", "size", "date_created", "date_modified"};
         println("Options: ");
@@ -136,7 +153,6 @@ public class CommandMode {
         }
 
         boolean ascending = order.startsWith("y");
-        in.nextLine();
         switch (choice) {
             case "name" -> tree.sortByName(ascending);
             case "size" -> tree.sortBySize(ascending);
@@ -146,7 +162,13 @@ public class CommandMode {
         }
     }
 
-    public static void statCommand(Scanner in, DirectoryTree tree) {
+    /**
+     * Stat item helper method for command mode
+     *
+     * @param in   the scanner object
+     * @param tree the directory tree
+     */
+    public static void stat(Scanner in, DirectoryTree tree) {
         println("Usage: <path>");
         print("(stat)> ");
         String path = in.nextLine();
@@ -171,12 +193,12 @@ public class CommandMode {
     }
 
     /**
-     * Move item(s) helper method for command mode
+     * Move item helper method for command mode
      *
-     * @param in
-     * @param tree
+     * @param in   the scanner object
+     * @param tree the directory tree
      */
-    public static void moveCommand(Scanner in, DirectoryTree tree) {
+    public static void move(Scanner in, DirectoryTree tree) {
         println("Usage: <source> <destination>");
         print("(move)> ");
         String sourceDest = in.nextLine();
@@ -224,15 +246,15 @@ public class CommandMode {
                 print("> ");
                 var command = in.nextLine().toLowerCase().strip();
                 switch (command) {
-                    case "create_file", "touch" -> createFileCommand(in, tree);
-                    case "create_directory", "mkdir" -> createDirectoryCommand(in, tree);
-                    case "delete", "rm" -> deleteCommand(in, tree);
-                    case "move", "mv" -> moveCommand(in, tree);
+                    case "create_file", "touch" -> createFile(in, tree);
+                    case "create_directory", "mkdir" -> createDirectory(in, tree);
+                    case "delete", "rm" -> delete(in, tree);
+                    case "move", "mv" -> move(in, tree);
                     case "search", "find" -> Common.search(in, tree);
-                    case "sort" -> sortCommand(in, tree);
-                    case "stat" -> statCommand(in, tree);
-                    case "rename" -> renameCommand(in, tree);
-                    case "cd" -> cdCommand(in, tree);
+                    case "sort" -> sort(in, tree);
+                    case "stat" -> stat(in, tree);
+                    case "rename" -> rename(in, tree);
+                    case "cd" -> cd(in, tree);
                     case "pwd" -> Common.printWd(tree);
                     case "show_structure", "ls" -> println(tree);
                     case "help", "h" -> println(help);
@@ -244,9 +266,13 @@ public class CommandMode {
                 }
             } catch (InputMismatchException e) {
                 println("Invalid option: " + e.getMessage());
-//                in.nextLine();
+                in.nextLine();
             } catch (UnsupportedOperationException e) {
                 println("Invalid Operation: " + e.getMessage());
+                in.nextLine();
+            } catch (NumberFormatException e) {
+                println("Invalid number: " + e.getMessage());
+                in.nextLine();
             }
         }
     }

@@ -20,6 +20,12 @@ import static utils.PrintUtils.println;
  * </ul>
  */
 public class Main {
+
+    /**
+     * Test the directory tree with a sample structure
+     *
+     * @param tree
+     */
     private static void testTree(DirectoryTree tree) {
         // Create the src directory and its substructure
         GeneralTreeNode<FileSystem> srcNode = tree.create(new Directory("src"));
@@ -68,6 +74,11 @@ public class Main {
     }
 
 
+    /**
+     * Main method for the virtual file system application
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
         boolean mode = false;
 
@@ -88,6 +99,7 @@ public class Main {
         DirectoryTree directoryTree = new DirectoryTree(new Directory(""));
         testTree(directoryTree);
 
+        println("Welcome to the Virtual File System (VFS)");
         try (Scanner in = new Scanner(System.in)) {
             if (mode) {
                 CommandMode.commandMode(in, directoryTree);

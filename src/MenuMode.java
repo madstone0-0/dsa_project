@@ -5,6 +5,10 @@ import java.util.Set;
 
 import static utils.PrintUtils.*;
 
+/**
+ * Represents the menu mode for the virtual file system application.
+ * The user can perform various operations on the file system using a menu interface.
+ */
 public class MenuMode {
 
     /**
@@ -106,8 +110,8 @@ public class MenuMode {
         }
 
         print("> ");
-        choice = in.nextInt();
         in.nextLine();
+        choice = in.nextInt();
 
         if (choice <= contents.size() && choice >= 0) {
             return (GeneralTreeNode<FileSystem>) contents.get(choice);
@@ -204,6 +208,7 @@ public class MenuMode {
                 println("Cannot rename root directory");
             } else {
                 print("Enter the new name > ");
+                in.nextLine();
                 newName = in.nextLine();
                 String oldName = tree.rename(wd, newName);
                 Common.renamePrompt(newName, oldName);
@@ -214,6 +219,7 @@ public class MenuMode {
         var childChoice = getChildChoice(in, tree, "rename", true);
         if (childChoice != null) {
             print("Enter the new name > ");
+            in.nextLine();
             newName = in.nextLine();
             String oldName = tree.rename(childChoice, newName);
             Common.renamePrompt(newName, oldName);
@@ -243,7 +249,6 @@ public class MenuMode {
         }
 
         boolean ascending = order.startsWith("y");
-        in.nextLine();
         switch (choice) {
             case 1 -> tree.sortByName(ascending);
             case 2 -> tree.sortBySize(ascending);
@@ -444,6 +449,12 @@ public class MenuMode {
                 }
             } catch (InputMismatchException e) {
                 println("Invalid option: " + e.getMessage());
+                in.nextLine();
+            } catch (UnsupportedOperationException e) {
+                println("Invalid Operation: " + e.getMessage());
+                in.nextLine();
+            } catch (NumberFormatException e) {
+                println("Invalid number: " + e.getMessage());
                 in.nextLine();
             }
         }

@@ -1,4 +1,3 @@
-import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,8 +68,18 @@ public class DirectoryTree {
     }
 
 
+    /**
+     * Validate the name of a file or directory.
+     *
+     * @param name the name to validate.
+     */
     public void validateName(String name) {
-        if (name.contains("/") || name.contains("\n") || name.contains("\r") || name.contains("\0")) {
+        if (name.isBlank()) {
+            throw new InputMismatchException("Name cannot be blank");
+        }
+
+        if (name.contains("\\") || name.contains("/") || name.contains("\n") || name.contains("\r") || name.contains(
+                "\0")) {
             throw new InputMismatchException("Invalid character in name: " + name);
         }
 
