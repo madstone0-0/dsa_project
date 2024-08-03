@@ -110,7 +110,6 @@ public class MenuMode {
         }
 
         print("> ");
-        in.nextLine();
         choice = in.nextInt();
 
         if (choice <= contents.size() && choice >= 0) {
