@@ -204,17 +204,17 @@ public class CommandMode {
      */
     public static void commandMode(Scanner in, DirectoryTree tree) {
         String help = """
-                      create_file - Create a file with the given path and size in bytes
-                      create_directory - Create a directory with the given path
-                      delete - Delete the file or directory at the given path
-                      move - Move the file or directory from the source to the destination
+                      create_file / touch - Create a file with the given path and size in bytes
+                      create_directory / mkdir - Create a directory with the given path
+                      delete / rm - Delete the file or directory at the given path
+                      move / mv - Move the file or directory from the source to the destination
                       stat - View the stats of the file or directory at the given path
                       rename - Rename the file or directory at the given path
                       cd - Change directory to the given path
                       pwd - Print the current working directory
-                      search - Search file or directory with the given name
+                      search / find - Search file or directory with the given name
                       sort - Sort the files and directories by the given option
-                      show_structure - Show the directory structure
+                      show_structure / ls - Show the directory structure
                       help - Show this help message
                       exit - Exit the program""";
         println(help);
@@ -224,18 +224,18 @@ public class CommandMode {
                 print("> ");
                 var command = in.nextLine().toLowerCase().strip();
                 switch (command) {
-                    case "create_file" -> createFileCommand(in, tree);
-                    case "create_directory" -> createDirectoryCommand(in, tree);
-                    case "delete" -> deleteCommand(in, tree);
-                    case "move" -> moveCommand(in, tree);
-                    case "search" -> Common.search(in, tree);
+                    case "create_file", "touch" -> createFileCommand(in, tree);
+                    case "create_directory", "mkdir" -> createDirectoryCommand(in, tree);
+                    case "delete", "rm" -> deleteCommand(in, tree);
+                    case "move", "mv" -> moveCommand(in, tree);
+                    case "search", "find" -> Common.search(in, tree);
                     case "sort" -> sortCommand(in, tree);
                     case "stat" -> statCommand(in, tree);
                     case "rename" -> renameCommand(in, tree);
                     case "cd" -> cdCommand(in, tree);
                     case "pwd" -> Common.printWd(tree);
-                    case "show_structure" -> println(tree);
-                    case "help" -> println(help);
+                    case "show_structure", "ls" -> println(tree);
+                    case "help", "h" -> println(help);
                     case "exit" -> {
                         println("Exiting...");
                         running = false;
