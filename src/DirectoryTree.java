@@ -13,8 +13,10 @@ public class DirectoryTree {
     private final LinkedGeneralTree<FileSystem> directoryTree = new LinkedGeneralTree<>();
     private final GeneralTreeNode<FileSystem> root; // Root of the directory tree
     private GeneralTreeNode<FileSystem> wd; // Current working directory
-    private Comparator<? super TreeNode<FileSystem>> sorter = Comparator.comparing(o -> o.data.getName()); // Default sorter by name
-    private final Set<GeneralTreeNode<FileSystem>> clipboard = new HashSet<>(); // Clipboard for cut-and-paste operations
+    private Comparator<? super TreeNode<FileSystem>> sorter = Comparator.comparing(o -> o.data.getName()); // Default
+    // sorter by name
+    private final Set<GeneralTreeNode<FileSystem>> clipboard = new HashSet<>(); // Clipboard for cut-and-paste
+    // operations
 
     /**
      * Constructor with a specified root.
@@ -66,6 +68,14 @@ public class DirectoryTree {
         if (!ascending) sorter = sorter.reversed(); // Reverse order if not ascending
     }
 
+
+    public void validateName(String name) {
+        if (name.contains("/") || name.contains("\n") || name.contains("\r") || name.contains("\0")) {
+            throw new InputMismatchException("Invalid character in name: " + name);
+        }
+
+    }
+
     /**
      * Default constructor creating a root directory "C:".
      */
@@ -81,12 +91,13 @@ public class DirectoryTree {
      * @return true if the file/directory exists, false otherwise.
      */
     private boolean existsInCurrentDirectory(String name) {
-        return this.wd.children.stream().anyMatch(node -> node.data.getName().equals(name)); // Check if name exists among children
+        return this.wd.children.stream().anyMatch(node -> node.data.getName().equals(name)); // Check if name exists
+        // among children
     }
 
     /**
      * Cuts the specified items (files or directories) and adds them to the clipboard.
-     * 
+     *
      * @param items the list of items to cut.
      */
     public void cut(ArrayList<GeneralTreeNode<FileSystem>> items) {
@@ -105,7 +116,7 @@ public class DirectoryTree {
 
     /**
      * Pastes the items from the clipboard to the specified indices in the current working directory.
-     * 
+     *
      * @param indices the indices where the items should be pasted.
      */
     public void paste(ArrayList<Integer> indices) {
@@ -128,7 +139,7 @@ public class DirectoryTree {
 
     /**
      * Searches for a directory with the specified name using a binary search tree.
-     * 
+     *
      * @param name the name of the directory to search for.
      * @return the search result as a string.
      */
@@ -148,6 +159,7 @@ public class DirectoryTree {
         if (existsInCurrentDirectory(dir.getName())) {
             throw new IllegalArgumentException("Directory already exists"); // Check for existing name
         }
+        validateName(dir.getName());
         return this.directoryTree.addChild(this.wd, dir); // Add new file or directory to tree
     }
 
@@ -172,6 +184,7 @@ public class DirectoryTree {
         if (existsInCurrentDirectory(newName)) {
             throw new IllegalArgumentException("Directory already exists"); // Check for existing name
         }
+        validateName(newName);
         return dir.data.rename(newName); // Rename the file or directory
     }
 
@@ -324,7 +337,7 @@ public class DirectoryTree {
 
     /**
      * Getter for the clipboard.
-     * 
+     *
      * @return the clipboard set containing cut items.
      */
     public Set<GeneralTreeNode<FileSystem>> getClipboard() {
